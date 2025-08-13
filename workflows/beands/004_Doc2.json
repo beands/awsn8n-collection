@@ -1,0 +1,825 @@
+{
+  "name": "Doc2",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=Ты умный помощник поиска информации в векторной базе данных Postgress. \nВсегда используй инструмент \"Answer questions with a vector store\" когда я прошу искать в базе. \nБудь внимателен и аккуратен\nОтвечай только на русском языке\n\nGenerate a detailed, well-structured response ,\nFormat the response strictly using Telegram's supported HTML syntax. Use tags like <b>, <i>, <u>, <s>, <span class=\"tg-spoiler\">, <code>, <pre> (with optional <code class=\"language-...\"> inside), <a href=\"...\">, and <blockquote> where appropriate.\n\nStructure the content logically using paragraphs and distinct sections. **Be mindful that this text might need to be split into multiple messages due to character limits (Telegram's limit is around 4096 characters per message). Try to make sections or paragraphs relatively self-contained where possible to facilitate splitting.**\n\n"
+        }
+      },
+      "id": "343e74ba-8b49-4b81-bae9-fdb44e412639",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        128,
+        112
+      ],
+      "typeVersion": 1.9
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "542172bb-9c9e-4d37-99d7-e96aeff956a9",
+      "name": "Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        1184,
+        112
+      ],
+      "webhookId": "137d8d2f-a941-4803-8646-8932525360c3",
+      "typeVersion": 1.2,
+      "alwaysOutputData": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "0qi3FW4k3wt1h1L5",
+          "name": "Document"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "id": "3f556fdf-c60b-4334-9611-205108e2dcae",
+      "name": "Think",
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "position": [
+        288,
+        448
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "dff725c5-f749-4599-acd3-fece938d5ebf",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "position": [
+        1120,
+        1088
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "48cc311f-a4c9-463b-a487-e29cb8c2a435",
+      "name": "Recursive Character Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "position": [
+        1424,
+        1264
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "id": "3def25a8-96b3-48e4-ba19-15e32f9e3df1",
+      "name": "Extract from File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        672,
+        912
+      ],
+      "typeVersion": 1,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "description": "Use this tool if the user asks to find information in the database.\n",
+        "topK": "=10"
+      },
+      "id": "2fc8eb2e-c379-41da-a418-76e3c6b7e0a9",
+      "name": "Answer questions with a vector store",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "position": [
+        528,
+        304
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Command Router').item.json.message.chat.id }}",
+        "text": "=✅ Документ сохранен!\n",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "cd6f003f-5ec7-4847-acd0-a0d5c9fa1822",
+      "name": "Telegram - Embedding Complete",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        1440,
+        880
+      ],
+      "webhookId": "4eaead72-f9a7-49a3-95ca-b3bc8f6b9a95",
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "0qi3FW4k3wt1h1L5",
+          "name": "Document"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "loose"
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "895b32db-777d-4d8e-b1d3-596cc9863d09",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "leftValue": "={{ $json.message.document }}",
+                    "rightValue": "={{ $json.message.document }}"
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "document"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "loose"
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "26c12573-8e00-4832-8410-73d2d739c455",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": ""
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "text"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "d5305589-483a-4b67-8009-ac47c79fb281",
+      "name": "Command Router",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        -208,
+        528
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger').item.json.message.document.file_id }}",
+        "additionalFields": {}
+      },
+      "id": "d036e8ce-996f-462c-bcff-3ffaf3d8fe38",
+      "name": "Telegram - Download file",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        240,
+        960
+      ],
+      "webhookId": "11b8f884-34bc-401c-8978-b28507d96e40",
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "0qi3FW4k3wt1h1L5",
+          "name": "Document"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "id": "f98e0df4-1bc3-46e6-a61b-c64a15304efe",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        1248,
+        848
+      ],
+      "notesInFlow": true,
+      "typeVersion": 1,
+      "notes": "This is used to flag the end of progress—no real aggregation."
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Manual Mapping').item.json.chatId }}",
+        "text": "={{ $('Manual Mapping').item.json.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "95aeef4c-a54e-4623-8b44-04cb80e4aa16",
+      "name": "Fallback- No formatting",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        1392,
+        160
+      ],
+      "webhookId": "dd2182fe-0b11-4d96-9838-30d60bf8c229",
+      "notesInFlow": true,
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "0qi3FW4k3wt1h1L5",
+          "name": "Document"
+        }
+      },
+      "notes": "This is used if, even after HTML formatting,g Telegram wasn't able to process the text, so we send it without formatting."
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output",
+        "options": {}
+      },
+      "id": "d27a8211-00c7-4d13-9aea-96fcbf27664d",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        768,
+        112
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.from.id }}"
+      },
+      "id": "00ed12f0-2a10-48e1-9ed1-0a01ce676832",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        192,
+        320
+      ],
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "import re\nimport html\n\ngemini_output_text = _('AI Agent').first().json.output;\n# Regex to match any HTML tag <...>\nHTML_TAG_PATTERN = re.compile(r'(<[^>]*?>)', re.IGNORECASE)\n\n# List of UNSUPPORTED Telegram HTML tag names\nUNSUPPORTED_TAG_NAMES = [\n    'p', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol',\n    'table', 'thead', 'tbody', 'tr', 'td', 'th', 'div', 'br', 'font',\n    'span', # Span is unsupported *unless* it has the specific class\n    'a'     # A is unsupported *unless* it has the href attribute\n    # Add more unsupported tags if you encounter them\n]\n\n# Regex to match unsupported opening or closing tags based on the names list\n# This pattern is simplified and might misinterpret complex attributes\nUNSUPPORTED_TAG_PATTERN = re.compile(r'<\\/?(' + '|'.join(UNSUPPORTED_TAG_NAMES) + r')\\b[^>]*?>', re.IGNORECASE)\n\n# Regex to match a span tag *without* the class=\"tg-spoiler\" attribute\n# This tries to capture the tag and its content to remove both\nUNSUPPORTED_SPAN_FULL_PATTERN = re.compile(r'<span(?! class=\"tg-spoiler\"\\b)[^>]*?>.*?<\\/span>', re.IGNORECASE | re.DOTALL) # DOTALL allows . to match newlines\n\n# Regex to match an a tag *without* an href attribute\n# This tries to capture the tag and its content to remove both\nUNSUPPORTED_A_FULL_PATTERN = re.compile(r'<a(?![^>]*href=)[^>]*?>.*?<\\/a>', re.IGNORECASE | re.DOTALL)\n\n\n# --- Cleaning Function (Regex Only) ---\n\ndef unescape_common_html_entities(text):\n    \"\"\"\n    Unescapes a limited set of common HTML entities in text.\n    Does NOT use html.unescape for maximum compatibility with \"no external library\" rule.\n    \"\"\"\n    # Order matters: &amp; must be replaced first!\n    text = text.replace('&amp;', '&')\n    text = text.replace('&lt;', '<')\n    text = text.replace('&gt;', '>')\n    text = text.replace('&quot;', '\"')\n    text = text.replace('&apos;', \"'\")\n    # Add more common entities here if needed, e.g., text = text.replace('&nbsp;', ' ')\n    return text\n\n\ndef clean_html_regex_only(html_string):\n    \"\"\"\n    Cleans HTML string using regex: removes unsupported tags and escapes text content.\n    Handles &apos; and other basic entities.\n    WARNING: This is a regex-based approach and is NOT as robust as using an HTML parser.\n    It may fail on complex or malformed HTML.\n\n    Args:\n        html_string (str): The input HTML string.\n\n    Returns:\n        str: The cleaned HTML string.\n    \"\"\"\n    # 1. Remove unsupported tags and their content where specific attributes are missing\n    # Process specific full patterns first\n    cleaned_text = UNSUPPORTED_SPAN_FULL_PATTERN.sub('', html_string)\n    cleaned_text = UNSUPPORTED_A_FULL_PATTERN.sub('', cleaned_text)\n\n    # 2. Remove remaining unsupported opening/closing tags, leaving content behind\n    cleaned_text = UNSUPPORTED_TAG_PATTERN.sub('', cleaned_text)\n\n    # 3. Split the remaining string into tags and text segments\n    # This pattern captures the tags themselves so we can differentiate them from text\n    parts = HTML_TAG_PATTERN.split(cleaned_text)\n\n    cleaned_parts = []\n    for part in parts:\n        if not part:\n            continue\n\n        if HTML_TAG_PATTERN.fullmatch(part):\n            # If the part is a tag (matches the full tag pattern)\n            # We assume at this point it's a supported tag due to previous removal steps.\n            # Keep the tag as is.\n            cleaned_parts.append(part)\n        else:\n            # If the part is text content\n            # 1. Unescape common HTML entities (like &apos;) that might be in the text\n            unescaped_text = unescape_common_html_entities(part)\n\n            # 2. Escape the literal characters <, >, & that are *in* the text content\n            # This ensures only the characters themselves are escaped, not entities.\n            # Need to escape & first to avoid issues with '&amp;' if it resulted from unescaping or was original.\n            re_escaped_text = unescaped_text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')\n\n            cleaned_parts.append(re_escaped_text)\n\n    # Join the processed parts back into a single string\n    return \"\".join(cleaned_parts)\n\n# --- Splitting Logic ---\nSPLIT_PATTERN_REGEX_ONLY = re.compile(r'(<\\/blockquote>|<\\/pre>|\\n\\n|\\s{2,}|(?<=[.!?])\\s+|<[a-z]+[^>]*?>|<\\/[a-z]+>)', flags=re.IGNORECASE)\n\n\ndef split_telegram_message_regex_only(text, max_length=4096):\n    \"\"\"\n    Splits text into multiple messages based on character count and basic patterns.\n    Operates on text already cleaned by clean_html_regex_only.\n    Does NOT guarantee HTML tag integrity across splits due to lack of parsing.\n\n    Args:\n        text (str): The input text (preferably cleaned by clean_html_regex_only).\n        max_length (int): The maximum length for each message part.\n\n    Returns:\n        list: A list of strings, where each string is a message part.\n    \"\"\"\n    if len(text) <= max_length:\n        return [text]\n\n    messages = []\n    current_chunk = \"\"\n\n    # Split by the defined pattern\n    parts = SPLIT_PATTERN_REGEX_ONLY.split(text)\n\n    for part in parts:\n        # Handle parts that are None (can happen with split) or just short whitespace\n        if part is None or (not part.strip() and len(part) < 2 and part != '\\n\\n'):\n             if part is not None and len(part) > 0: # Keep meaningful whitespace splits like \\n\\n\n                  if len(current_chunk) + len(part) <= max_length:\n                       current_chunk += part\n                  else:\n                       # Split happens within meaningful whitespace, finalize chunk\n                       if current_chunk.strip(): # Only add if chunk has content\n                            messages.append(current_chunk.strip())\n                       current_chunk = part # Start new chunk with the whitespace\n             continue # Skip to next part\n\n\n        # Check if adding the current part exceeds the max length\n        if len(current_chunk) + len(part) > max_length:\n            # If the current chunk is empty or only whitespace after stripping,\n            # it means the 'part' itself is too long to fit in a new chunk.\n            if not current_chunk.strip():\n                # Handle very long individual parts (e.g., a huge code block line, a very long word, a single huge tag)\n                # Hard split the long part. WARNING: This can break tags, words, or escape sequences.\n                while len(part) > max_length:\n                    messages.append(part[:max_length])\n                    part = part[max_length:]\n                if part.strip():\n                    current_chunk = part # Remaining part starts a new chunk\n                else:\n                     current_chunk = \"\" # If remainder is just whitespace, clear\n            else:\n                # The current part makes the chunk too long, finalize the current chunk\n                messages.append(current_chunk.strip())\n                # Start a new chunk with the current part\n                current_chunk = part # Keep original part for the new chunk\n\n        else:\n            # Add the current part to the chunk\n            current_chunk += part\n\n    # Add the last chunk\n    if current_chunk.strip(): # Only add if the final chunk has content\n        messages.append(current_chunk.strip())\n\n    # Clean up any empty messages that might have been created\n    messages = [msg for msg in messages if msg.strip()]\n\n    return messages\n  \ncleaned_html_regex = clean_html_regex_only(gemini_output_text)\nmessage_parts_regex = split_telegram_message_regex_only(cleaned_html_regex)\n\nreturn dict({'output': message_parts_regex })"
+      },
+      "id": "99eaef6a-4235-4a1e-93e2-4f00a6487c57",
+      "name": "Handle formatting and split",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        544,
+        112
+      ],
+      "typeVersion": 2,
+      "notes": "This is used to prevent Markdown issues in Telegram while sending messages."
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cdeb5bf1-c91c-44ae-bebd-ab3f4ba2561a",
+              "name": "text",
+              "type": "string",
+              "value": "={{ $json.output }}"
+            },
+            {
+              "id": "7cd7d120-96fa-4539-b343-25bc9b75abb4",
+              "name": "chatId",
+              "type": "number",
+              "value": "={{ $('Command Router').item.json.message.from.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cc80e0eb-35af-4a01-a747-5bde218d94c0",
+      "name": "Manual Mapping",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        960,
+        112
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Command Router').item.json.message.chat.id }}",
+        "text": "Unsupported command or file. 😓 Please upload a valid PDF document or ask your question regarding your files.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "8a97ab48-dfbb-4bc6-84a1-bd4c43ed1213",
+      "name": "Unsupported message",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        144,
+        1184
+      ],
+      "webhookId": "52f3456a-06ef-4799-b245-0293213dcc4b",
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "0qi3FW4k3wt1h1L5",
+          "name": "Document"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Command Router').item.json.message.chat.id }}",
+        "text": "=<b>Процес обработки...</b>\n<b>Ожидайте...⏳</b>",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "ac865478-e657-4f9c-8fd7-d9b6c2b03f7e",
+      "name": "Send processing document message",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        384,
+        1344
+      ],
+      "webhookId": "32ade357-f14b-4d10-91f2-02c8aa6e198e",
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "0qi3FW4k3wt1h1L5",
+          "name": "Document"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Command Router').item.json.message.chat.id }}",
+        "text": "=<b>Документ загружен ✅ </b> \n<b>Страниц:</b> {{ $json.numpages }} \n<b>Владелец:</b> {{ $json.info.Creator }}\n<b>Название:</b> {{ $json.info.Title }} \n<b>Версия:</b> {{ $json.version }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "bd1bd0ae-41a7-4265-b440-49c3b81be098",
+      "name": "Send embedding Started message",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        864,
+        1088
+      ],
+      "webhookId": "32ade357-f14b-4d10-91f2-02c8aa6e198e",
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "0qi3FW4k3wt1h1L5",
+          "name": "Document"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        688,
+        720
+      ],
+      "id": "e6877cf1-bc88-4520-bf13-40815d64e76c",
+      "name": "Embeddings HuggingFace Inference",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "NiU5i9xlaqvlzdxV",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": "n8n_vectors2",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.1,
+      "position": [
+        864,
+        880
+      ],
+      "id": "95a35fc9-f03f-4ca8-b7ef-ad2edeb00394",
+      "name": "Postgres PGVector Store",
+      "credentials": {
+        "postgres": {
+          "id": "mmg9TJug1crHDhua",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_vectors2",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.1,
+      "position": [
+        464,
+        464
+      ],
+      "id": "2f0ae934-278b-4d38-a76a-8507ab3402c4",
+      "name": "Postgres PGVector Store1",
+      "credentials": {
+        "postgres": {
+          "id": "mmg9TJug1crHDhua",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "meta-llama/llama-4-scout",
+          "mode": "list",
+          "cachedResultName": "meta-llama/llama-4-scout"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        832,
+        512
+      ],
+      "id": "41d3e5e9-186e-4fb2-b492-ec7b94f08bd6",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "oGIuLRYINpapi1Ps",
+          "name": "OpenRouter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "0edae61c-27d3-49d5-82cc-07922e5fdf2f",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        -384,
+        528
+      ],
+      "webhookId": "d4f286b2-8094-40e3-aeb2-813eb1895ecf",
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "0qi3FW4k3wt1h1L5",
+          "name": "Document"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen-turbo",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        48,
+        368
+      ],
+      "id": "b2e563e8-8161-49b8-b1d3-68eabb7fcd4a",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "YhWdFblBS0EqOY8F",
+          "name": "OpenRouter account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Handle formatting and split",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Fallback- No formatting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Embedding Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Manual Mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Command Router": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Download file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unsupported message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Mapping": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Send embedding Started message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Postgres PGVector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Postgres PGVector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram - Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send processing document message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle formatting and split": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer questions with a vector store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Inference": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Postgres PGVector Store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Postgres PGVector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres PGVector Store": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres PGVector Store1": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Command Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e895e822-77f7-4b78-b6c4-78a6351112c3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9231723f537d35de72b1fbd4c07c55060f6cd2f00b2fb8e91472f57ce50a95af"
+  },
+  "id": "MAYBY7y5NgGma1ON",
+  "tags": [
+    {
+      "createdAt": "2025-04-27T03:31:56.876Z",
+      "updatedAt": "2025-04-27T03:31:56.876Z",
+      "id": "r6PkLGWTxlVkIjGs",
+      "name": "BeandsMedia"
+    }
+  ]
+}

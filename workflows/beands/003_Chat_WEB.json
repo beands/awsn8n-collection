@@ -1,0 +1,381 @@
+{
+  "name": "Chat WEB",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {
+          "allowedOrigins": "*",
+          "responseMode": "responseNode"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1120,
+        -240
+      ],
+      "id": "50e9dce9-a6a3-4020-adc1-69a6ad8fa48e",
+      "name": "When chat message received",
+      "webhookId": "7bce0e01-e3ba-43f0-aa70-5cbe5823443c"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1MkpTOJhcTng7UwZzMoJV6sRgEcxIk7qV_pYDt2fZe2M",
+          "mode": "list",
+          "cachedResultName": "Цены на услуги",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MkpTOJhcTng7UwZzMoJV6sRgEcxIk7qV_pYDt2fZe2M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MkpTOJhcTng7UwZzMoJV6sRgEcxIk7qV_pYDt2fZe2M/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        -448,
+        240
+      ],
+      "id": "0a79aa9a-1d39-40d7-8553-ee5ba2001564",
+      "name": "Product_info",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "EjPWBysNE3160w4D",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Delete all \"*\" and \"**\" symbols from the text below and make it readable on mobile devices. Devide logical pieces by empty lines to make it more readable for users on small devices\n\nText:\n {{ $json.output }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        0,
+        -240
+      ],
+      "id": "4bccd71b-9ab5-4b41-a008-7fcbb50704bd",
+      "name": "Делаем ответ более читаемым"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=client question is below:\n{{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "Всегда Используй инструмент \"Product_info\" для поиска в таблице и точного ответа клиенту на вопросы, времени работы, телефоне, сайте, email, адрес, контактных данных, как связаться, сколько стоит, цена, стоимость создания чат бота, сайта, приложений\n\nЕсли ты не можеш найти ответ в инструменте \"Product_info\", используй дружелюбный тон, и не говори, что ты не знаешь ответа, а предложи назначить встречу или способ связи для дальнейшего обсуждения\n\nИспользуйте смайлики, если это уместно, чтобы придать беседе более дружелюбный вид\n\nВ ваших ответах не должно быть никаких пометок, таких как символ \"*\", за исключением переносов строк\n\nЕсли клиент просит назначить встречу, ты запрашиваешь его номер телефона и удобное время встречи, создаешь задачу в Google Tasks с названием встречи и впиши номер телефона указанный клиентом и временем указанный клиентом."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -560,
+        -320
+      ],
+      "id": "c780bb19-bccf-4068-9e23-135651ab96e0",
+      "name": "ИИ-агент для поддержки"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "kruykoff@gmail.com",
+          "mode": "list",
+          "cachedResultName": "kruykoff@gmail.com"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        288,
+        400
+      ],
+      "id": "1bea312e-d10a-4dc0-8bb9-e83f6a28ef97",
+      "name": "Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "IDraVICgNwH7s5f9",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTimeTool",
+      "typeVersion": 2,
+      "position": [
+        -48,
+        448
+      ],
+      "id": "291736ca-ae18-49e7-87c9-d531a0debc06",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "task": "MTc3NzA5NzE3MzUwNTMxODQ4MzM6MDow",
+        "title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleTasksTool",
+      "typeVersion": 1,
+      "position": [
+        128,
+        432
+      ],
+      "id": "a5ff5f86-15fc-4e8c-a170-ebea9cd7386a",
+      "name": "Google Tasks",
+      "credentials": {
+        "googleTasksOAuth2Api": {
+          "id": "mn3dnGBMvUIllyS7",
+          "name": "Google Tasks account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "deepseek/deepseek-chat",
+          "mode": "list",
+          "cachedResultName": "deepseek/deepseek-chat"
+        },
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -800,
+        240
+      ],
+      "id": "64e0462b-1fbe-4b6a-9d00-9cd9113b8a17",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "oGIuLRYINpapi1Ps",
+          "name": "OpenRouter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "google/gemini-2.0-flash-lite-001",
+          "mode": "list",
+          "cachedResultName": "google/gemini-2.0-flash-lite-001"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        32
+      ],
+      "id": "068468f1-a9b9-4f0d-b826-b24e2a6a9bb0",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "oGIuLRYINpapi1Ps",
+          "name": "OpenRouter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_chat_2"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -608,
+        272
+      ],
+      "id": "ddf448f4-f43c-41e4-8661-c5d3928736ce",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "mmg9TJug1crHDhua",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        -160
+      ],
+      "id": "167a9486-ebe1-4246-a1ae-e94bc0018e1c",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -480,
+        -96
+      ],
+      "id": "cb8da6e3-49e2-4ee4-bbbe-7301c7e9cf10",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {
+    "When chat message received": [
+      {
+        "json": {
+          "action": "sendMessage",
+          "sessionId": "c7123e5d-d4b0-4354-82f7-900501830692",
+          "chatInput": "Здравствуйте"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Делаем ответ более читаемым": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ИИ-агент для поддержки": {
+      "main": [
+        [
+          {
+            "node": "Делаем ответ более читаемым",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "ИИ-агент для поддержки",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "ai_tool": [
+        [
+          {
+            "node": "ИИ-агент для поддержки",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Tasks": {
+      "ai_tool": [
+        [
+          {
+            "node": "ИИ-агент для поддержки",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ИИ-агент для поддержки",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "ИИ-агент для поддержки",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Делаем ответ более читаемым",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        []
+      ]
+    },
+    "Product_info": {
+      "ai_tool": [
+        [
+          {
+            "node": "ИИ-агент для поддержки",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "ИИ-агент для поддержки",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9f51ae65-29a6-4e2e-94ef-6c6fef0ba793",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9231723f537d35de72b1fbd4c07c55060f6cd2f00b2fb8e91472f57ce50a95af"
+  },
+  "id": "OuGhwHa2bhwFdbki",
+  "tags": []
+}

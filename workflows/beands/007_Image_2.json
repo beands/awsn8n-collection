@@ -1,0 +1,352 @@
+{
+  "name": "Image 2",
+  "nodes": [
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -64,
+        288
+      ],
+      "id": "7c48062c-9b7b-4c5d-86c5-7501d0c2f8a4",
+      "name": "Wait",
+      "webhookId": "74276acc-e402-42a8-9cd5-dffc3cb51c58"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "31a2b3db-78a0-41b8-815f-ffb6c572279d",
+              "name": "base64",
+              "value": "={{ $json.body.data[0].b64_json }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        368,
+        -48
+      ],
+      "id": "b62a9b56-e0da-41e7-9f18-37f09503c12c",
+      "name": "Set base"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.together.xyz/v1/images/generations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer tgp_v1_D6nTCvNbJcTpxuNmFQhick_n82E3rrDX5MPtTY3gHoc"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n{\n\"model\": \"black-forest-labs/FLUX.1-schnell-Free\",\n\"prompt\": $json.output,\n\"width\": 1024,\n\"height\": 1024,\n\"steps\": 4,\n\"n\": 1,\n\"response_format\": \"b64_json\",\n\"stop\": []\n}\n}}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        224,
+        -48
+      ],
+      "id": "e2a917ed-47d2-49bf-902b-e7351971225b",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        512,
+        -48
+      ],
+      "id": "2f829663-b229-4c56-ba96-bc54f04cd05e",
+      "name": "Convert to File1"
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        288
+      ],
+      "id": "12277f4d-e068-4d6c-a32f-5038b3a56c5f",
+      "name": "Telegram",
+      "webhookId": "b9816b55-62a4-462c-a9db-7542dd6d5b68",
+      "credentials": {
+        "telegramApi": {
+          "id": "TVcvfPlTCOGNnjRp",
+          "name": "Telegram image"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -208,
+        -48
+      ],
+      "id": "1bdd69b9-e617-4400-a70e-d28947be928b",
+      "name": "Telegram Trigger",
+      "webhookId": "444bb4d4-1c8d-4512-9b7e-41fe50dcdc02",
+      "credentials": {
+        "telegramApi": {
+          "id": "TVcvfPlTCOGNnjRp",
+          "name": "Telegram image"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "# Overview  \nYou are a creative industrial engineer for the FLUX network. Your task is to make an image generation tool.\nRemove \"Prompt:\" from the response\n!!!do not use quotation marks, special characters, and the concatenation sign & and \\n in prompt. Use only English"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -64,
+        -48
+      ],
+      "id": "9bb53c92-89d7-4478-9b28-a08eb8d53cd2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "google/gemini-2.0-flash-001",
+          "mode": "list",
+          "cachedResultName": "google/gemini-2.0-flash-001"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -240,
+        160
+      ],
+      "id": "d748f597-589a-4e6d-8ec9-a4e451e163ca",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "oGIuLRYINpapi1Ps",
+          "name": "OpenRouter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "=картинка - {{$now}}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1tuiU7WFLr1MaaySefHJBpGowoYUrjbJQ",
+          "mode": "list",
+          "cachedResultName": "n8n image",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1tuiU7WFLr1MaaySefHJBpGowoYUrjbJQ"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        144,
+        288
+      ],
+      "id": "b5755ebb-147f-4bcb-ab29-9b7962679b3b",
+      "name": "Загрузка файла на диск",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "VsCk3wS2hdovl9ng",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        320,
+        288
+      ],
+      "id": "307c4554-8fc6-430b-993e-99dbb37ac43b",
+      "name": "Передача файла в телегу",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "VsCk3wS2hdovl9ng",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Загрузка файла на диск",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set base": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Set base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Загрузка файла на диск": {
+      "main": [
+        [
+          {
+            "node": "Передача файла в телегу",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Передача файла в телегу": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "bbeae8e6-97bb-4571-a9cf-773bdbc6935f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9231723f537d35de72b1fbd4c07c55060f6cd2f00b2fb8e91472f57ce50a95af"
+  },
+  "id": "dgrriPRo07jSd5Vi",
+  "tags": []
+}

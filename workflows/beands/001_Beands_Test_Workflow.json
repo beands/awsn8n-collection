@@ -1,0 +1,70 @@
+{
+  "name": "Beands Test Workflow",
+  "description": "Тестовый воркфлоу для проверки системы индексации",
+  "tags": ["custom", "beands", "test", "automation"],
+  "nodes": [
+    {
+      "id": "test-node-1",
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "position": [100, 100],
+      "parameters": {}
+    },
+    {
+      "id": "test-node-2", 
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [300, 100],
+      "parameters": {
+        "url": "https://api.example.com/test",
+        "method": "GET"
+      }
+    },
+    {
+      "id": "test-node-3",
+      "name": "Set",
+      "type": "n8n-nodes-base.set",
+      "position": [500, 100],
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "Hello from Beands Custom Workflow!"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Set",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

@@ -1,0 +1,906 @@
+{
+  "name": "WordPress",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Write SEO Optimized Blog Post\n\n\n",
+        "height": 440,
+        "width": 420,
+        "color": 3
+      },
+      "id": "b6c8f4b3-83cd-419c-862e-1d488d7d63d8",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -464,
+        240
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "title": "={{ $('Combine Blog Details').item.json.data[2].output.title }}",
+        "additionalFields": {
+          "authorId": 1,
+          "content": "={{ $json.content }}",
+          "slug": "={{ $('Combine Blog Details').item.json.data[2].output.slug }}",
+          "status": "draft",
+          "commentStatus": "closed",
+          "sticky": false,
+          "postTemplate": {
+            "values": {}
+          }
+        }
+      },
+      "id": "e4e5aa11-d1db-4d4d-8d81-af6a5d69766d",
+      "name": "Wordpress",
+      "type": "n8n-nodes-base.wordpress",
+      "position": [
+        -240,
+        912
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "wordpressApi": {
+          "id": "UoTj72FePAAw8wxk",
+          "name": "Wordpress account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Create HTML\n\n\n",
+        "height": 280,
+        "width": 440,
+        "color": 7
+      },
+      "id": "d1b4c81b-d38b-4615-bc18-f0abcb1d5565",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Post on Wordpress\n\n\n",
+        "height": 280,
+        "width": 300,
+        "color": 4
+      },
+      "id": "70757c24-bb95-4ce0-88f3-710e3747796e",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -336,
+        800
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "deepseek/deepseek-chat",
+          "mode": "list",
+          "cachedResultName": "deepseek/deepseek-chat"
+        },
+        "options": {}
+      },
+      "id": "ac7dcf7b-7258-4fa7-b1f6-e8421e815e3e",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        64,
+        624
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "oGIuLRYINpapi1Ps",
+          "name": "OpenRouter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\"slug\": \"rpo-benefits-recruitment\",\n\"title\": \"7 Key Advantages of RPO for Modern Recruitment\",\n\"meta\": \"Explore how Recruitment Process Outsourcing (RPO) enhances hiring efficiency, reduces costs, and expands talent pools for businesses seeking top candidates.\"\n}"
+      },
+      "id": "c525603b-6a8e-4c1b-b4c3-1e55085b7a14",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        352,
+        624
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "deepseek/deepseek-chat-v3-0324",
+          "mode": "list",
+          "cachedResultName": "DEEPSEEK/DEEPSEEK-CHAT-V3-0324"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Only output the HTML content without preamble or further explanation. Generate WordPress-compatible HTML for a blog post based on the provided content.\n\n### CONTENT PROCESSING:\n- Process all content from {{ $json.output }}\n- Preserve all original facts, information, and URLs\n- Format according to the specifications below\n\n### REQUIRED STRUCTURE (IN THIS ORDER):\n1. Title (H2)\n2. Время чтения\n3. Ключевые моменты (3-5 основных пунктов)\n4. Содержание статьи (linked to all headings)\n5. Main content (with proper heading hierarchy)\n6. Часто задаваемые вопросы\n\n### STYLING REQUIREMENTS:\n- Style Override: Include a style section with !important declarations\n- Links: All hyperlinks, TOC items, and FAQ questions must be #00c2ff (blue)\n- Headings: All headings need a bottom border in #00c2ff with padding\n- Spacing: Add <br><br> between each major section\n\n### ENGAGEMENT FORMATTING:\n- Use bold, italics, bullet points, quotes, and highlighting for emphasis\n- Create proper paragraph structure with appropriate line breaks\n- NO emojis allowed\n- Use whitespace strategically for readability\n\n### HYPERLINK HANDLING (CRITICAL):\n- When URLs appear next to keyphrases (e.g., \"AI tools (https://example.com)\")\n- Convert to: <a href=\"https://example.com\" style=\"color: #00c2ff !important;\">AI tools</a>\n- The KEYPHRASE must be linked, never the URL itself\n\n### WORDPRESS COMPATIBILITY:\n- Use WordPress block classes (wp-block-heading, wp-block-paragraph, etc.)\n- Add heading IDs starting with \"h-\" for better TOC linking\n- Ensure all styles use !important to override theme styles\n\nDO NOT include any explanations, code tags, or comments. Output ONLY the raw HTML.\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6b9dbbfa-e5f3-4574-b404-561da53cce8d",
+      "name": "Create HTML",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        48,
+        80
+      ],
+      "typeVersion": 1.8,
+      "credentials": {
+        "openAiApi": {
+          "id": "oGIuLRYINpapi1Ps",
+          "name": "OpenRouter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "id": "95a58cb5-9726-49a0-ae03-a5e0f3f7bf86",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        560,
+        352
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://beands-media.ru/wp-json/wp/v2/media",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "wordpressApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Disposition",
+              "value": "=attachment; filename=\"cover-image-{{ $('Wordpress').item.json.id }}.jpeg\""
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "id": "236a9cad-7396-4f22-9350-f694603aa5ea",
+      "name": "Upload Image to Wordpress",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        768,
+        912
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "wordpressApi": {
+          "id": "UoTj72FePAAw8wxk",
+          "name": "Wordpress account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://beands-media.ru/wp-json/wp/v2/posts/{{ $('Wordpress').item.json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "wordpressApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "featured_media",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0923eecd-e7fa-4af6-9438-3553e5ed7ef8",
+      "name": "Set Image on Wordpress Post",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        960,
+        912
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "wordpressApi": {
+          "id": "UoTj72FePAAw8wxk",
+          "name": "Wordpress account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Perplexity Research\n\n\n",
+        "height": 300,
+        "width": 460,
+        "color": 4
+      },
+      "id": "3722c8a1-02ae-4c64-bd03-976c82f5ca6e",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -960,
+        240
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.perplexity.ai/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"sonar-pro\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Действуйте как профессиональный исследователь, способный находить детальные сводки по теме автоматизации и нейросетей из авторитетных источников.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Исследуйте следующую тему и верните всю информацию о: '{{ $json.message.text }}'. Фокус: автоматизация бизнес-процессов, нейросети, AI-консалтинг, RPA.\"\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "id": "62aa145e-87ad-47f4-afd1-236cbae7d1bc",
+      "name": "Perplexity Research",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -880,
+        80
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "BvTETbXxtT3NkALg",
+          "name": "fall api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "23b8e8c4-9191-415a-9661-1b60d413528a",
+              "name": "research",
+              "type": "string",
+              "value": "={{ $json.choices[0].message.content.replaceAll(\"[1]\", \" - источник: \" +$json.citations[0]).replaceAll(\"[2]\",\" - источник:\" +$json.citations[1]).replaceAll(\"[3]\",\" - источник: \" +$json.citations[2]).replaceAll(\"[4]\",\" - источник: \"+$json.citations[3]).replaceAll(\"[5]\",\" - источник: \"+$json.citations[4]).replaceAll(\"[6]\",\" - источник: \"+$json.citations[5]).replaceAll(\"[7]\",\" - источник: \"+$json.citations[6]).replaceAll(\"[8]\",\" - источник: \"+$json.citations[7]).replaceAll(\"[9]\",\" - источник: \"+$json.citations[8]).replaceAll(\"[10]\",\" - источник: \"+$json.citations[9]) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "85a818c3-fdab-4138-81ec-408856dd1e44",
+      "name": "Cleanup Links",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -688,
+        80
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "content": "## Create Title, Slug & Meta\n\n\n",
+        "height": 440,
+        "width": 440,
+        "color": 7
+      },
+      "id": "0e155d5f-6c54-41fd-8256-65dd7dc99cca",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        320
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0afb2988-1481-4b04-b16d-fb33c50a16d0",
+              "name": "content",
+              "type": "string",
+              "value": "={{ $json.data[0].message.content.replaceAll('```html', '').replaceAll('```','') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "202abacd-9d96-4e5b-8010-206607800a77",
+      "name": "Cleanup HTML ",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        768,
+        608
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "content": "## Set Image for Wordpress Post",
+        "height": 440,
+        "width": 1300
+      },
+      "id": "58943a1f-11e8-4c58-85cb-b189ae33d7f6",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        800
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Готово! Ваш пост был успешно создан и отправлен в WordPress (Черновики).\n\nНазвание поста: {{ $json.title.raw }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "303d355f-a2aa-4b94-b58c-f9e4e8e0e80d",
+      "name": "Send Success Message to Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        1360,
+        912
+      ],
+      "webhookId": "91f7d710-450a-4b66-8e46-82f53492351e",
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "dDBpGWDguXp8cNVI",
+          "name": "botWP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "c4bc449a-8490-4838-a62d-f6238911f3c1",
+      "name": "Combine Blog Details",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        768,
+        352
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Вы являетесь частью маркетинговой команды, которая создает высококачественные посты в блогах для индустрии искусственного интеллекта и автоматизации рабочих процессов. Ваша цель - создавать привлекательный, оптимизированный для SEO контент, который позиционирует вас, как эксперта в AI-консалтинге и автоматизации процессов через n8n.\n\nКаждые 2 дня публикуется статья о трендах в AI и автоматизации. Как копирайтер, вы получаете:  \n- **Запрос:** Основная тема статьи (например, \"Автоматизация CRM через нейросети\").  \n- **Ключевые слова:** Список высокочастотных запросов (например, \"нейросети для бизнеса\", \"автоматизация процессов\", \"AI-консалтинг\").\n- **Исследование:** Данные от Perplexity.ai по теме.\n\nВаша задача написать статью, которая:\n- Включает ключевые слова (не спам!) естественно запрос в заголовок блога, заголовок H2.\n- Основывается на данных исследования.\n- Даёт практические советы (например, как внедрить RPA).\n- Содержит CTA действие, например, \"Узнайте, как внедрить нейросети в моём → <a href=\"https://t.me/beandslab\">Телеграмм канале</a>\"\n- Длина: 1500–2000 слов.\n- Тон: профессиональный, но доступный для владельцев бизнеса.\n\n- Другие ключевые слова: список ключевых слов с большим объемом поиска, связанных с консалтингом в области искусственного интеллекта и рабочими процессами n8n. Включите их естественным образом в пост в блоге, где это уместно, не навязывая их и не меняя смысла поста.\n\n- Результаты исследования: Подробная информация из авторитетных источников, относящаяся к теме блога. Ваш пост должен основываться на этом исследовании.\n\nСоздайте черновик всего поста в блоге в своем первом выходе. Не останавливайтесь и не сокращайте его.\n\nВашим результатом должна быть запись в блоге и ничего больше. Исключите из текста все упоминания источников и ссылок. Фокусируйтесь только на фактах.\n\nВот подробности этого проекта для публикации поста в блоге:\n\nЗапрос:\n{{ $('Telegram Trigger').item.json.message.text }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -400,
+        352
+      ],
+      "id": "00e2f498-533d-4990-b550-5dd316d2fb57",
+      "name": "Копирайтер AI Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=** Создайте заголовок поста в блоге и мета-описание для следующего поста в блоге.:**\n\n{{ $json.output }}\n\n**Slug Guidelines:**\n- Излагайте кратко (максимум 4-5 слов).\n- Включите основное ключевое слово, связанное с AI автоматизацией и n8n.\n- Используйте дефисы для разделения слов.\n- Избегайте ненужных слов, артиклей или предлогов.\n- Убедитесь, что оно отражает основную тему поста в блоге.\n- Сделайте его читабельным и релевантным как для пользователей, так и для поисковых систем.\n\n**Title Guidelines:**\n- Не пишите каждое слово с заглавной буквы, а только первое слово должно начинаться с большой буквы.\n- Avoid AI words like \"Transform\" or \"Revolutionize\" and similar overused terms.\n- Avoid using a colon (:) in the title.\n- Never structure it as a primary/secondary title separated by a colon.\n- Включите основное ключевое слово, связанное с AI и мскусственным интеллектом (например, \"Искусственный интеллект в подборе персонала\" или \"AI агенты для бизнеса\").\n- Clearly inform users what they can expect from reading the blog post.\n- Be concise and engaging, ideally 50-60 characters long.\n- Используйте убедительные слова, которые понравятся специалистам по автоматизации, экспертам и владельцам бизнеса.\n\n**Meta Description Guidelines:**\n- Avoid AI words like \"Transform\" or \"Revolutionize\" and similar overused terms.\n- Be concise: Limit to 150-160 characters to ensure full visibility in search results.\n- Include keywords: Naturally incorporate AI keywords to enhance relevance and visibility.\n- Provide value: Clearly convey the benefits or insights readers will gain from the article.\n- Be engaging: Use action-oriented language or a thought-provoking question to encourage clicks.\n- Align with content: Accurately reflect the blog post's content to meet user expectations and reduce bounce rates.\n- Highlight expertise: Subtly emphasize SocialFind's authority in the AI.\n\nYour output must be a single valid JSON object with these 3 fields:\n-slug: The slug\n-title: The blog post title\n-meta: The meta description  \n\nEach should be presented without any additional text, explanation, quotation marks, or formatting.\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        64,
+        448
+      ],
+      "id": "e51e971d-97b9-48f3-a555-67ee0634d5d7",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1104,
+        352
+      ],
+      "id": "e6dc4a8b-5c28-4f91-98af-89b00aee3d2b",
+      "name": "Telegram Trigger",
+      "webhookId": "32792b6a-4e66-4cef-8b79-5ad1df050e15",
+      "credentials": {
+        "telegramApi": {
+          "id": "dDBpGWDguXp8cNVI",
+          "name": "botWP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "deepseek/deepseek-chat-v3-0324",
+          "mode": "list",
+          "cachedResultName": "deepseek/deepseek-chat-v3-0324"
+        },
+        "options": {}
+      },
+      "id": "7339bda5-4e88-49ce-a3b5-d5d45b383452",
+      "name": "gpt-4o-mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -400,
+        544
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "oGIuLRYINpapi1Ps",
+          "name": "OpenRouter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://beands-media.ru/wp-json/wp/v2/media/{{ $json.featured_media }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "wordpressApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"alt_text\": \"{{ $('AI Agent').item.json.output.meta }}\",\n  \"title\": \"{{ $('AI Agent').item.json.output.title }}\",\n  \"caption\": \"{{ $('AI Agent').item.json.output.title }}\",\n  \"description\": \"{{ $('AI Agent').item.json.output.meta }}\"\n}",
+        "options": {}
+      },
+      "id": "179c002c-e0dc-48ba-9a8a-c72dd51ddfce",
+      "name": "Добавление мета данных",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1168,
+        912
+      ],
+      "credentials": {
+        "wordpressApi": {
+          "id": "UoTj72FePAAw8wxk",
+          "name": "Wordpress account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        1120
+      ],
+      "id": "c4c9d607-c241-46fa-b6c8-323824e09864",
+      "name": "Wait",
+      "webhookId": "74276acc-e402-42a8-9cd5-dffc3cb51c58"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "31a2b3db-78a0-41b8-815f-ffb6c572279d",
+              "name": "base64",
+              "value": "={{ $json.body.data[0].b64_json }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        864
+      ],
+      "id": "16bcf109-74ee-46b7-b939-8eb1e2c1c1b1",
+      "name": "Set base"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.together.xyz/v1/images/generations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer tgp_v1_D6nTCvNbJcTpxuNmFQhick_n82E3rrDX5MPtTY3gHoc"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n{\n\"model\": \"black-forest-labs/FLUX.1-schnell-Free\",\n\"prompt\": $json.output,\n\"width\": 1024,\n\"height\": 768,\n\"steps\": 4,\n\"n\": 1,\n\"response_format\": \"b64_json\",\n\"stop\": []\n}\n}}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        400,
+        848
+      ],
+      "id": "8827ac3c-90b5-4324-9c19-63645a298bce",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        384,
+        1040
+      ],
+      "id": "424c4e8c-ea5d-479e-be3c-4dc401e7226e",
+      "name": "Convert to File1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.title.raw }}",
+        "options": {
+          "systemMessage": "# Overview  \nYou are a master image prompt generator specialized in crafting detailed, high-quality prompts for advanced image models like Flux. Your task is to generate vivid,  well-structured prompts that accurately depict request. in English only"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        48,
+        864
+      ],
+      "id": "dc6d7d18-2e66-4893-8ce4-b9edecd17548",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        48,
+        1088
+      ],
+      "id": "6d0944e4-0de0-4a6f-bd4f-b2ab740a2ce4",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "oGIuLRYINpapi1Ps",
+          "name": "OpenRouter"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Telegram Trigger": [
+      {
+        "json": {
+          "update_id": 301885585,
+          "message": {
+            "message_id": 74,
+            "from": {
+              "id": 5248594304,
+              "is_bot": false,
+              "first_name": "Евгений",
+              "last_name": "B&S",
+              "language_code": "ru"
+            },
+            "chat": {
+              "id": 5248594304,
+              "first_name": "Евгений",
+              "last_name": "B&S",
+              "type": "private"
+            },
+            "date": 1746938283,
+            "text": "\"Собираем данные компаний и проводим анализ\". Используй в статье следующее: Используются n8n, поиск в картах через Serper AI, поиск по сайту компании Firecrawl, хранение в google sheets, данный проект нужен для поиска и анализа информации потенциальных клиентов"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Combine Blog Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wordpress": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create HTML": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cleanup HTML ": {
+      "main": [
+        [
+          {
+            "node": "Wordpress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perplexity Research": {
+      "main": [
+        []
+      ]
+    },
+    "Combine Blog Details": {
+      "main": [
+        [
+          {
+            "node": "Cleanup HTML ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Image to Wordpress": {
+      "main": [
+        [
+          {
+            "node": "Set Image on Wordpress Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Image on Wordpress Post": {
+      "main": [
+        [
+          {
+            "node": "Добавление мета данных",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cleanup Links": {
+      "main": [
+        []
+      ]
+    },
+    "Копирайтер AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Create HTML",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Копирайтер AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4o-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Копирайтер AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Добавление мета данных": {
+      "main": [
+        [
+          {
+            "node": "Send Success Message to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Upload Image to Wordpress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set base": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Set base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "42906ad8-2bcc-4796-93c6-c15534c8761d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9231723f537d35de72b1fbd4c07c55060f6cd2f00b2fb8e91472f57ce50a95af"
+  },
+  "id": "eXG3FrtpIJX26qpo",
+  "tags": []
+}

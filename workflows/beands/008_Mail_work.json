@@ -1,0 +1,540 @@
+{
+  "name": "Mail work",
+  "nodes": [
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "use this tool to get previous business clients' cases",
+        "documentId": {
+          "__rl": true,
+          "value": "1ouY040-Hj5RDhU61VRihvxylrnmCmAUQV9KRdWs1CfU",
+          "mode": "list",
+          "cachedResultName": "Clients",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ouY040-Hj5RDhU61VRihvxylrnmCmAUQV9KRdWs1CfU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1240254377,
+          "mode": "list",
+          "cachedResultName": "Case",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ouY040-Hj5RDhU61VRihvxylrnmCmAUQV9KRdWs1CfU/edit#gid=1240254377"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        -624,
+        368
+      ],
+      "id": "50280f81-9457-46e7-9cac-3401f2a958a2",
+      "name": "findCases",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "EjPWBysNE3160w4D",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ouY040-Hj5RDhU61VRihvxylrnmCmAUQV9KRdWs1CfU",
+          "mode": "list",
+          "cachedResultName": "Clients",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ouY040-Hj5RDhU61VRihvxylrnmCmAUQV9KRdWs1CfU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Clients",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ouY040-Hj5RDhU61VRihvxylrnmCmAUQV9KRdWs1CfU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Имя": "={{ $json.body.params.name }}",
+            "Телефон": "={{ $json.body.params.phone }}",
+            "Email": "={{ $json.body.params.mail }}",
+            "Бюджет": "={{ $json.body.params.budget }}",
+            "Пожелания": "={{ $json.body.params.reason }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Имя",
+              "displayName": "Имя",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Телефон",
+              "displayName": "Телефон",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Бюджет",
+              "displayName": "Бюджет",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Пожелания",
+              "displayName": "Пожелания",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -848,
+        -16
+      ],
+      "id": "545ee548-5724-40a8-a93f-f9bd2c19b42a",
+      "name": "Добавляем лида в CRM",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "EjPWBysNE3160w4D",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=New lead data are below\n\nName:  {{ $json['Имя'] }}\nPhone: {{ $json['Телефон'] }}\nEmail: {{ $json.Email }}\nWebsite budget: {{ $json['Бюджет'] }}\nClient's needs: {{ $json['Пожелания'] }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=##Role\nYou are a professional assistant of a Russian web-design agency \"Beands Media\" which is specialized on creating websites for small businesses. You have amazing copywriting skills as well. Your task is to create welcome email for each new lead based on his data in order to make sure he will make a deal with our web-design agency\n\n##Available tools\n-findCases: use this tool to try to get 1-3 relevant website cases similar to what a new lead wants to build\n\n##Rules\n-before crafting any email try to find relevent cases to insert them into the email to assure new lead that we can fulfill his wished and make a great site. Don't make up any cases by yourself\n-always insert agency phone and website in the end of the sales letter\n\n##Remarks\n-You are in Vladivostok timezone\n-Today's date is {{ $now }}\n-Agency phone is \"+7 (902) 067 16-37\", agency site is \"https://beands-media.ru\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -624,
+        -16
+      ],
+      "id": "5a104d42-933f-4890-b871-a12621976643",
+      "name": "ИИ-копирайтер"
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-chat",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -688,
+        224
+      ],
+      "id": "1d7eda2f-32fb-4c0e-94a7-1c51b2f494f5",
+      "name": "Мозги копирайтера",
+      "credentials": {
+        "openRouterApi": {
+          "id": "YhWdFblBS0EqOY8F",
+          "name": "OpenRouter account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"emailSubject\": {\n\t\t\t\"type\": \"string\",\n            \"description\" : \"The subject of the sales email to a new lead\"\n\t\t},\n\t\t\"emailBody\": {\n\t\t\t\"type\": \"string\",\n\t\t\t\"description\": \"The body of the sales letter to a new lead\"\n\t\t}\n\t},\n    \"required\": [\"emailSubject\", \"emailBody\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -416,
+        224
+      ],
+      "id": "c3e2540f-b172-4eb8-8a3f-563ee20dd426",
+      "name": "Форматируем вывод копирайтера"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "529aeb7b-fecf-4b49-810d-bb44e2d72aad",
+              "name": "emailBody",
+              "value": "={{ $json.output.emailBody }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        -16
+      ],
+      "id": "73b48fd1-55b7-4618-934c-57c827ed594c",
+      "name": "Переприсваиваем тело письма"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "insta-web@yandex.ru",
+        "subject": "=ОЖИДАЕТСЯ ОДОБРЕНИЕ:  {{ $('ИИ-копирайтер').item.json.output.emailSubject }}",
+        "message": "=Параметры новой заявки на сайт\n\nИмя: {{ $('Добавляем лида в CRM').item.json['Имя'] }}\nТелефон: {{ $('Добавляем лида в CRM').item.json['Телефон'] }}\nПочта: {{ $('Добавляем лида в CRM').item.json['Почта'] }}\nБюджет: {{ $('Добавляем лида в CRM').item.json['Бюджет'] }}\nДля чего сайт: {{ $('Добавляем лида в CRM').item.json['Для чего нужен сайт'] }}\n\nТекст письма, которое ожидает одобрен ниже:\n\n{{ $json.emailBody }}",
+        "responseType": "freeText",
+        "options": {
+          "messageButtonLabel": "Дать обратную связь по письму",
+          "responseFormButtonLabel": "Отправить"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        -16
+      ],
+      "id": "48694b48-dd58-407b-9cbd-457b0dc52f48",
+      "name": "Отправляем письмо на проверку",
+      "webhookId": "f531db52-d0ed-4919-b1c9-ea2f4a46ec46",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Q17KQto7FX6IZmQL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.data.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "approved",
+              "description": "=text sounds like an approvement. it means that there is no need to do any amends to email\n\nexamples:\n\"да, все отлично\"\n\"отправляй\"\n\"все ок\"\n\"ок\"\n\"подтверждаю\""
+            },
+            {
+              "category": "disapproved",
+              "description": "=If the text sounds like you have to make any amend or unsatisfaction.There is some kind of command to do something instead of sending an email to a client. There is no clear sign of approvement\n\nexamples:\n\"убери последний абзац\"\n\"переделай название\"\n\"пусть звучит менее формально\""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1,
+      "position": [
+        208,
+        -16
+      ],
+      "id": "95db6fa9-dea6-439d-af5c-b86451a54842",
+      "name": "Классифицируем обратную связь"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Amends:\n{{ $('Отправляем письмо на проверку').item.json.data.text }}\n\nEmail body:\n{{ $('Переприсваиваем тело письма').item.json.emailBody }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=#Role\nYou are professional copywriter for a web-design agency in Russia \"BeandsMedia\". Rewrite the email body based on amends"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        400,
+        224
+      ],
+      "id": "4003e72e-1c8d-48a2-abeb-11574f27314c",
+      "name": "ИИ-перекопирайтер"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Получаем лида из формы').item.json.body.params.mail }}",
+        "subject": "={{ $('ИИ-копирайтер').item.json.output.emailSubject }}",
+        "emailType": "text",
+        "message": "={{ $('Переприсваиваем тело письма').item.json.emailBody }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        624,
+        -48
+      ],
+      "id": "c3253633-927a-465d-baf6-6202ab87a3e8",
+      "name": "Отправляем письмо лиду",
+      "webhookId": "a9d5df05-f2de-41f3-9e11-7de3e8915a5b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Q17KQto7FX6IZmQL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "40ad1788-0c84-4bbe-aa4c-f275b0d0ca7d",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1056,
+        -16
+      ],
+      "id": "365bbe49-cc79-473c-ae63-00bd1a3b1021",
+      "name": "Получаем лида из формы",
+      "webhookId": "40ad1788-0c84-4bbe-aa4c-f275b0d0ca7d"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"emailSubject\": {\n\t\t\t\"type\": \"string\",\n            \"description\" : \"The subject of the sales email to a new lead\"\n\t\t},\n\t\t\"emailBody\": {\n\t\t\t\"type\": \"string\",\n\t\t\t\"description\": \"The body of the sales letter to a new lead\"\n\t\t}\n\t},\n    \"required\": [\"emailSubject\", \"emailBody\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        608,
+        512
+      ],
+      "id": "7d16ccbd-fe3a-4071-8612-9ad78bf84c75",
+      "name": "Форматируем вывод копирайтера1"
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-chat",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        384,
+        480
+      ],
+      "id": "2b58abf9-2681-4621-a780-c721a499fe21",
+      "name": "Мозги перекопирайтера",
+      "credentials": {
+        "openRouterApi": {
+          "id": "YhWdFblBS0EqOY8F",
+          "name": "OpenRouter account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-chat",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        64,
+        208
+      ],
+      "id": "605a0e5c-8eb0-4b6e-bc91-206726d5a27c",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "YhWdFblBS0EqOY8F",
+          "name": "OpenRouter account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "findCases": {
+      "ai_tool": [
+        [
+          {
+            "node": "ИИ-копирайтер",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Добавляем лида в CRM": {
+      "main": [
+        [
+          {
+            "node": "ИИ-копирайтер",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ИИ-копирайтер": {
+      "main": [
+        [
+          {
+            "node": "Переприсваиваем тело письма",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Мозги копирайтера": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ИИ-копирайтер",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Форматируем вывод копирайтера": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "ИИ-копирайтер",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Переприсваиваем тело письма": {
+      "main": [
+        [
+          {
+            "node": "Отправляем письмо на проверку",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Отправляем письмо на проверку": {
+      "main": [
+        [
+          {
+            "node": "Классифицируем обратную связь",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Классифицируем обратную связь": {
+      "main": [
+        [
+          {
+            "node": "Отправляем письмо лиду",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ИИ-перекопирайтер",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ИИ-перекопирайтер": {
+      "main": [
+        [
+          {
+            "node": "Переприсваиваем тело письма",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Получаем лида из формы": {
+      "main": [
+        [
+          {
+            "node": "Добавляем лида в CRM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Мозги перекопирайтера": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ИИ-перекопирайтер",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Форматируем вывод копирайтера1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "ИИ-перекопирайтер",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Классифицируем обратную связь",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ddb55c84-c313-4a14-af11-941c43ccdf17",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9231723f537d35de72b1fbd4c07c55060f6cd2f00b2fb8e91472f57ce50a95af"
+  },
+  "id": "YZUnV7LEBNLuwZou",
+  "tags": []
+}
