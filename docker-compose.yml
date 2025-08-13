@@ -1,0 +1,17 @@
+# AWS N8N Collection Docker Compose
+# Comprehensive automation workflows for AWS services and beyond
+# Author: beands (https://beands-media.ru)
+
+version: '3.8'
+
+services:
+  awsn8n-collection:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./workflows:/app/workflows
+      - ./database:/app/database
+    environment:
+      - WORKFLOW_DB_PATH=/app/database/workflows.db
+    restart: unless-stopped
